@@ -1,0 +1,10 @@
+{
+  "name": "مواقيت الصلاة والأذان الذكي",
+  "description": "تطبيق متطور لحساب مواقيت الصلاة والأذان تلقائياً بحسب الموقع الجغرافي وخطوط الطول والعرض، مع إشعار استعد للصلاة قبل الأذان واتجاه القبلة.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
