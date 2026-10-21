@@ -164,6 +164,18 @@ export function calculatePrayerTimes(
     }
   }
 
+  // If now is after midnight but before today's Fajr, use yesterday's prayer times to compute current night's SunnahTimes (middle/last third of the night) and Isha current status
+  let activeSunnahTimes = sunnahTimes;
+  if (now < prayerTimes.fajr.getTime()) {
+    const yesterday = new Date(date);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayPrayerTimes = new PrayerTimes(coordinates, yesterday, params);
+    activeSunnahTimes = new SunnahTimes(yesterdayPrayerTimes);
+    if (currentPrayerId === null) {
+      currentPrayerId = 'isha';
+    }
+  }
+
   // If next is fajr and now is after isha, next prayer time is tomorrow's fajr
   const items: PrayerTimeItem[] = rawList.map((item) => {
     let targetTime = item.time;
@@ -210,8 +222,8 @@ export function calculatePrayerTimes(
     nextPrayerItem,
     currentPrayerItem,
     qiyamTimes: {
-      middleOfTheNight: sunnahTimes.middleOfTheNight,
-      lastThirdOfTheNight: sunnahTimes.lastThirdOfTheNight,
+      middleOfTheNight: activeSunnahTimes.middleOfTheNight,
+      lastThirdOfTheNight: activeSunnahTimes.lastThirdOfTheNight,
     },
     duhaTime,
     rawPrayerTimes: prayerTimes,
@@ -402,7 +414,7 @@ export function checkPreAzanStatus(
   }
 
   const diffMs = nextPrayerItem.time.getTime() - now.getTime();
-  const diffMinutes = Math.floor(diffMs / (60 * 1000));
+  const diffMinutes = Math.ceil(diffMs / (60 * 1000));
 
   // If time until prayer is between 0 and minutesBefore (inclusive)
   const isPreAzanWindow = diffMs > 0 && diffMinutes <= minutesBefore;

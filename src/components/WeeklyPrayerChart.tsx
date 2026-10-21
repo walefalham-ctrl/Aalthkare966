@@ -110,15 +110,15 @@ export function WeeklyPrayerChart({
   const [selectedPrayer, setSelectedPrayer] = useState<string>('all');
   const [chartType, setChartType] = useState<'line' | 'area'>('line');
 
+  const currentDayKey = `${currentTime.getFullYear()}-${currentTime.getMonth()}-${currentTime.getDate()}`;
+
   // Build current week data (7 days: starting from Saturday or beginning of current week)
   const weeklyData = useMemo(() => {
     const data = [];
     const baseDate = new Date(currentTime);
     
     // Find the start of the current week (Saturday in Islamic/Arab calendar, or 0 = Sunday)
-    // In Arab world, Saturday is day 6 or Sunday is 0. Let's make the week start from current week's Saturday:
     const dayOfWeek = baseDate.getDay(); // 0 is Sunday, 6 is Saturday
-    // Calculate days back to Saturday: if dayOfWeek is Saturday (6), diff is 0; if Sunday (0), diff is 1; etc.
     const diffToSaturday = (dayOfWeek + 1) % 7; 
     
     const weekStart = new Date(baseDate);
@@ -140,9 +140,9 @@ export function WeeklyPrayerChart({
       );
 
       const isToday =
-        dayDate.getDate() === currentTime.getDate() &&
-        dayDate.getMonth() === currentTime.getMonth() &&
-        dayDate.getFullYear() === currentTime.getFullYear();
+        dayDate.getDate() === baseDate.getDate() &&
+        dayDate.getMonth() === baseDate.getMonth() &&
+        dayDate.getFullYear() === baseDate.getFullYear();
 
       // Extract minutes from midnight for each prayer
       const getPrayerMinutes = (id: string) => {
@@ -189,7 +189,7 @@ export function WeeklyPrayerChart({
     }
 
     return data;
-  }, [location.latitude, location.longitude, settings.calculationMethod, settings.madhab, currentTime]);
+  }, [location.latitude, location.longitude, settings.calculationMethod, settings.madhab, currentDayKey]);
 
   // Calculate change between first day and last day of the week
   const weeklyTrends = useMemo(() => {

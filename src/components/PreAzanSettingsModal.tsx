@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   X,
   Bell,
@@ -47,8 +47,6 @@ export function PreAzanSettingsModal({
   onTestPreAzanAlert,
   onTestWitrAlert,
 }: PreAzanSettingsModalProps) {
-  if (!isOpen) return null;
-
   const defaultWitr: WitrReminderSettings = {
     enabled: true,
     timingMode: 'lastThird',
@@ -61,6 +59,17 @@ export function PreAzanSettingsModal({
     ...settings,
     witrReminder: settings.witrReminder || defaultWitr,
   });
+
+  useEffect(() => {
+    if (isOpen) {
+      setLocalSettings({
+        ...settings,
+        witrReminder: settings.witrReminder || defaultWitr,
+      });
+    }
+  }, [isOpen, settings]);
+
+  if (!isOpen) return null;
 
   const handleSave = () => {
     onUpdateSettings(localSettings);

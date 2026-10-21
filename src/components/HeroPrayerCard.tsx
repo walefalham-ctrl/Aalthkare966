@@ -54,8 +54,6 @@ export function HeroPrayerCard({
   onTestPreAzanChime,
   onOpenSettings,
 }: HeroPrayerCardProps) {
-  if (!nextPrayer) return null;
-
   // Calculate approximate percentage of day / prayer interval passed
   const progressPercent = useMemo(() => {
     if (!currentPrayer || !nextPrayer) return 0;
@@ -77,6 +75,8 @@ export function HeroPrayerCard({
       .map((p) => `${p.arabicName} ${p.formattedTime}`)
       .join('  •  ');
   }, [allPrayers]);
+
+  if (!nextPrayer) return null;
 
   const getPrayerIcon = (id: string) => {
     switch (id) {

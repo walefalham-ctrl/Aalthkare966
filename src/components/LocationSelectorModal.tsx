@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   X,
   MapPin,
@@ -29,14 +29,23 @@ export function LocationSelectorModal({
   isWatchingLocation,
   onToggleWatchLocation,
 }: LocationSelectorModalProps) {
-  if (!isOpen) return null;
-
   const [searchQuery, setSearchQuery] = useState('');
   const [latInput, setLatInput] = useState(String(currentLocation.latitude));
   const [lngInput, setLngInput] = useState(String(currentLocation.longitude));
   const [cityNameInput, setCityNameInput] = useState(currentLocation.city);
   const [isLocating, setIsLocating] = useState(false);
   const [geoError, setGeoError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setLatInput(String(currentLocation.latitude));
+      setLngInput(String(currentLocation.longitude));
+      setCityNameInput(currentLocation.city);
+      setGeoError(null);
+    }
+  }, [isOpen, currentLocation]);
+
+  if (!isOpen) return null;
 
   // Filter preset cities
   const filteredCities = PRESET_CITIES.filter(

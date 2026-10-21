@@ -17,20 +17,15 @@ export function QiblaCompass({
   isOpen,
   onClose,
 }: QiblaCompassProps) {
-  if (!isOpen) return null;
-
-  const { degrees, compassDirectionText, distanceKm } = calculateQiblaBearing(
-    latitude,
-    longitude
-  );
-
   const [deviceAlpha, setDeviceAlpha] = useState<number | null>(null);
   const [hasCompassSensor, setHasCompassSensor] = useState(false);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleOrientation = (e: DeviceOrientationEvent) => {
       // @ts-expect-error webkitCompassHeading for iOS
-      const heading = e.webkitCompassHeading || (e.alpha ? 360 - e.alpha : null);
+      const heading = e.webkitCompassHeading ?? (e.alpha !== null ? 360 - e.alpha : null);
       if (heading !== null) {
         setDeviceAlpha(heading);
         setHasCompassSensor(true);
@@ -42,9 +37,16 @@ export function QiblaCompass({
     }
 
     return () => {
-      window.removeEventListener('deviceorientation', handleOrientation);
+      window.removeEventListener('deviceorientation', handleOrientation, true);
     };
-  }, []);
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
+  const { degrees, compassDirectionText, distanceKm } = calculateQiblaBearing(
+    latitude,
+    longitude
+  );
 
   // Needle angle: if device orientation is active, needle rotates relative to device; otherwise points at bearing angle
   const needleRotation =
